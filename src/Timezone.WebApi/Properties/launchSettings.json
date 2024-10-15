@@ -1,14 +1,5 @@
 {
   "profiles": {
-    "https": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:5280"
-    },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,

@@ -11,7 +11,7 @@ public class PostConvertExamples : IMultipleExamplesProvider<TimeZoneConversionR
             "Example 1 - Convert UTC to New York Time",
             new TimeZoneConversionRequest
             {
-                DateTime = DateTime.UtcNow,
+                DateTime = TimeProvider.System.GetUtcNow().DateTime,
                 FromTimezone = "UTC",
                 ToTimezone = "America/New_York"
             });
@@ -21,7 +21,7 @@ public class PostConvertExamples : IMultipleExamplesProvider<TimeZoneConversionR
             "Example 2 - Convert New York Time to UTC",
             new TimeZoneConversionRequest
             {
-                DateTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/New_York")),
+                DateTime = TimeZoneInfo.ConvertTime(TimeProvider.System.GetUtcNow().DateTime, TimeZoneInfo.FindSystemTimeZoneById("America/New_York")),
                 FromTimezone = "America/New_York",
                 ToTimezone = "UTC"
             });
@@ -31,7 +31,7 @@ public class PostConvertExamples : IMultipleExamplesProvider<TimeZoneConversionR
             "Example 3 - Convert from one timezone to another timezone",
             new TimeZoneConversionRequest
             {
-                DateTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/New_York")),
+                DateTime = TimeZoneInfo.ConvertTime(TimeProvider.System.GetUtcNow().DateTime, TimeZoneInfo.FindSystemTimeZoneById("America/New_York")),
                 FromTimezone = "America/New_York",
                 ToTimezone = "Europe/London"
             });
