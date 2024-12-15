@@ -19,6 +19,11 @@ public static class MappingExtensions
         BaseOffset = timezone.BaseUtcOffset
     };
 
+    public static TimeZoneConversionResultResponse ToResponse(this TimeZoneConversionResultDomain domain) => new()
+    {
+        DateTime = domain.DateTime
+    };
+
     public static IEnumerable<TimezoneResponse> ToResponse(this IEnumerable<TimeZoneInfo> timezones) =>
         timezones.Select(x => x.ToResponse());
 }

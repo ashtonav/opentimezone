@@ -1,4 +1,10 @@
+using System.Runtime.InteropServices;
 using TimezoneWebApi.Dependency;
+
+if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+{
+    throw new PlatformNotSupportedException("Currently, this application is designed to work exclusively on Linux/Docker due to its specific timezone support. Support for other operating systems is not yet provided.");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
