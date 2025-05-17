@@ -12,7 +12,7 @@ using Timezone.Core.Services;
 public class ConvertController(ITimezoneService timezoneService) : Controller
 {
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DateTime))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TimeZoneConversionResultResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
     [SwaggerRequestExample(typeof(TimeZoneConversionRequest), typeof(PostConvertExamples))]
     public async Task<TimeZoneConversionResultResponse> ConvertTime(TimeZoneConversionRequest request)
