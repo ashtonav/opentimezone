@@ -33,7 +33,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
             (response.Content, JsonSerializerOptions);
 
         // Assert
-        listOfTimezones.Count().Should().BeGreaterOrEqualTo(minimumExpectedNumberOfTimezones);
+        listOfTimezones.Count().Should().BeGreaterThan(minimumExpectedNumberOfTimezones);
     }
 
     [When(@"I send the request")]
