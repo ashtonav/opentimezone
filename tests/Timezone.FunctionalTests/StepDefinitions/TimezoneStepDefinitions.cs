@@ -20,13 +20,13 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     {
         var request = new RestRequest("/timezones");
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest?>(request);
     }
 
     [Then(@"I should get at least (.*) timezones")]
     public void ThenIShouldGetAtLeastTimezones(int minimumExpectedNumberOfTimezones)
     {
-        var response = Context.Get<RestResponse>();
+        var response = Context.Get<RestResponse?>();
 
         // Act
         var listOfTimezones = JsonSerializer.Deserialize<IEnumerable<TimezoneResponse>>
@@ -39,10 +39,10 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     [When(@"I send the request")]
     public void WhenISendTheRequest()
     {
-        var request = Context.Get<RestRequest>();
+        var request = Context.Get<RestRequest?>();
         var response = Client.Execute(request);
         // Add to context
-        Context.Set(response);
+        Context.Set<RestResponse?>(response);
     }
 
     [Given(@"I have a request to get '(.*)' timezone")]
@@ -50,14 +50,14 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     {
         var request = new RestRequest($"/timezone/{timezoneName}");
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest?>(request);
     }
 
     [Then(@"the response should return '(.*)' status code")]
     public void ThenTheResponseShouldReturnStatusCode(string statusCode)
     {
         // Arrange
-        var response = Context.Get<RestResponse>();
+        var response = Context.Get<RestResponse?>();
         var expectedStatusCode = int.Parse(statusCode, CultureInfo.InvariantCulture);
         var actualStatusCode = (int)response.StatusCode;
 
@@ -69,7 +69,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     public void ThenTheResponseShouldContainTimezoneInformation(Table table)
     {
         // Arrange
-        var response = Context.Get<RestResponse>();
+        var response = Context.Get<RestResponse?>();
         var expectedName = table.Rows[0]["Name"];
         var expectedOffset = int.Parse(table.Rows[0]["Offset"], CultureInfo.InvariantCulture);
 

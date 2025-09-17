@@ -28,7 +28,7 @@ public class ConvertStepDefinitions(ScenarioContext context) : TestBase(context)
         });
 
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest?>(request);
     }
 
     [Then(@"the response should correctly convert the time into '""([^""]*)""'")]
@@ -38,7 +38,7 @@ public class ConvertStepDefinitions(ScenarioContext context) : TestBase(context)
         var expected = DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
 
         // Act
-        var rawResponse = Context.Get<RestResponse>();
+        var rawResponse = Context.Get<RestResponse?>();
         var response = JsonSerializer.Deserialize<TimeZoneConversionResultResponse>
             (rawResponse.Content, JsonSerializerOptions);
 
