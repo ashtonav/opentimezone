@@ -28,7 +28,7 @@ public class ConvertStepDefinitions(ScenarioContext context) : TestBase(context)
         });
 
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest>(request);
     }
 
     [Then(@"the response should correctly convert the time into '""([^""]*)""'")]

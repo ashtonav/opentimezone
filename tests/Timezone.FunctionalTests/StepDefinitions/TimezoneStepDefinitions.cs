@@ -20,7 +20,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     {
         var request = new RestRequest("/timezones");
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest>(request);
     }
 
     [Then(@"I should get at least (.*) timezones")]
@@ -42,7 +42,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
         var request = Context.Get<RestRequest>();
         var response = Client.Execute(request);
         // Add to context
-        Context.Set(response);
+        Context.Set<RestResponse>(response);
     }
 
     [Given(@"I have a request to get '(.*)' timezone")]
@@ -50,7 +50,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     {
         var request = new RestRequest($"/timezone/{timezoneName}");
         // Add to context
-        Context.Set(request);
+        Context.Set<RestRequest>(request);
     }
 
     [Then(@"the response should return '(.*)' status code")]
