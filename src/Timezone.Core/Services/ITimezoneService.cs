@@ -4,7 +4,7 @@ using Models;
 
 public interface ITimezoneService
 {
-    TimeZoneConversionResultDomain ConvertFromOneTimezoneToAnother(TimeZoneConversionDomain request);
-    IEnumerable<TimeZoneInfo> GetTimezones();
-    TimeZoneInfo? GetTimezone(string timezoneId);
+    public TimeZoneConversionResultDomain ConvertFromOneTimezoneToAnother(TimeZoneConversionDomain request);
+    public IEnumerable<TimeZoneInfo> GetTimezones();
+    public TimeZoneInfo? GetTimezone(string timezoneId);
 }
