@@ -1,7 +1,7 @@
 namespace TimezoneWebApi.Dependency;
 
 using Controllers.Examples;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.Filters;

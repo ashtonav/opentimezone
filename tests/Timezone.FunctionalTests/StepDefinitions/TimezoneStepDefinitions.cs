@@ -3,7 +3,7 @@ namespace Timezone.FunctionalTests.StepDefinitions;
 using System.Globalization;
 using System.Text.Json;
 using Core.Models;
-using FluentAssertions;
+using NUnit.Framework;
 using RestSharp;
 using Support;
 
@@ -33,7 +33,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
             (response.Content, JsonSerializerOptions);
 
         // Assert
-        listOfTimezones.Count().Should().BeGreaterOrEqualTo(minimumExpectedNumberOfTimezones);
+        Assert.That(listOfTimezones.Count(), Is.GreaterThanOrEqualTo(minimumExpectedNumberOfTimezones));
     }
 
     [When(@"I send the request")]
@@ -62,7 +62,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
         var actualStatusCode = (int)response.StatusCode;
 
         // Assert
-        expectedStatusCode.Should().Be(actualStatusCode);
+        Assert.That(actualStatusCode, Is.EqualTo(expectedStatusCode));
     }
 
     [Then(@"the response should contain timezone information:")]
@@ -78,8 +78,8 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
             (response.Content, JsonSerializerOptions);
 
         // Assert
-        actualTimezone.DisplayName.Should().Be(expectedName);
-        actualTimezone.BaseOffset.Hours.Should().Be(expectedOffset);
+        Assert.That(actualTimezone.DisplayName, Is.EqualTo(expectedName));
+        Assert.That(actualTimezone.BaseOffset.Hours, Is.EqualTo(expectedOffset));
     }
 
 }

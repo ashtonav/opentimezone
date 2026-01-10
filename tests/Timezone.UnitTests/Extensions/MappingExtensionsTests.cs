@@ -1,4 +1,5 @@
 namespace Timezone.UnitTests.Extensions;
+
 using NUnit.Framework;
 using Timezone.Core.Extensions;
 using Timezone.Core.Models;
@@ -21,12 +22,12 @@ public class MappingExtensionTests
         var result = request.ToDomain();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.DateTime, Is.EqualTo(request.DateTime));
             Assert.That(result.FromTimezone.Id, Is.EqualTo(TimezoneHelper.GetTimezone(request.FromTimezone).Id));
             Assert.That(result.ToTimezone.Id, Is.EqualTo(TimezoneHelper.GetTimezone(request.ToTimezone).Id));
-        });
+        }
     }
 
     [Test]
@@ -39,12 +40,12 @@ public class MappingExtensionTests
         var response = timezone.ToResponse();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(response.Id, Is.EqualTo(timezone.Id));
             Assert.That(response.DisplayName, Is.EqualTo(timezone.DisplayName));
             Assert.That(response.BaseOffset, Is.EqualTo(timezone.BaseUtcOffset));
-        });
+        }
     }
 
     [Test]
@@ -81,12 +82,12 @@ public class MappingExtensionTests
         Assert.That(response, Has.Count.EqualTo(timeZones.Count));
         for (var i = 0; i < response.Count; i++)
         {
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(response[i].Id, Is.EqualTo(timeZones[i].Id));
                 Assert.That(response[i].DisplayName, Is.EqualTo(timeZones[i].DisplayName));
                 Assert.That(response[i].BaseOffset, Is.EqualTo(timeZones[i].BaseUtcOffset));
-            });
+            }
         }
     }
 
@@ -119,12 +120,12 @@ public class MappingExtensionTests
         var result = request.ToDomain();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.DateTime, Is.EqualTo(request.DateTime));
             Assert.That(result.FromTimezone.StandardName, Is.EqualTo(TimezoneHelper.GetTimezone(request.FromTimezone).StandardName));
             Assert.That(result.ToTimezone.StandardName, Is.EqualTo(TimezoneHelper.GetTimezone(request.ToTimezone).StandardName));
-        });
+        }
     }
 
     [Test]
