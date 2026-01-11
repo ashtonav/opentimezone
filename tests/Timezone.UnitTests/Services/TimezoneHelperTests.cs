@@ -1,4 +1,5 @@
 namespace Timezone.UnitTests.Services;
+
 using NUnit.Framework;
 using Timezone.Core.Services;
 
@@ -29,12 +30,12 @@ public class TimezoneHelperTests
         // Act
         var result = TimezoneHelper.GetTimezone(timezoneId);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             // Assert
             Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid.");
             Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the Id of the returned timezone to match the timezoneId.");
-        });
+        }
     }
 
     // Test when timezoneId does not correspond to a valid timezone id
@@ -61,12 +62,12 @@ public class TimezoneHelperTests
         // Act
         var result = TimezoneHelper.GetTimezone(timezoneId);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             // Assert
             Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid.");
             Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the returned timezone to match the local timezone.");
-        });
+        }
     }
 
     // Test when timezoneId is for a timezone that does not observe daylight saving time (e.g., Arizona Mountain Time)
@@ -79,12 +80,12 @@ public class TimezoneHelperTests
         // Act
         var result = TimezoneHelper.GetTimezone(timezoneId);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             // Assert
             Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid.");
             Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the Id of the returned timezone to match the timezoneId.");
-        });
+        }
         Assert.That(result.SupportsDaylightSavingTime, Is.False, "Expected the returned timezone to not support daylight saving time.");
     }
 
@@ -188,12 +189,12 @@ public class TimezoneHelperTests
         // Act
         var result = TimezoneHelper.GetTimezone(timezoneId);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             // Assert
             Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid and has historical changes.");
             Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the Id of the returned timezone to match the timezoneId, even with historical changes.");
-        });
+        }
     }
 
     [Test]
@@ -205,12 +206,12 @@ public class TimezoneHelperTests
         // Act
         var result = TimezoneHelper.GetTimezone(timezoneId);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             // Assert
             Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid and has a non-integer UTC offset.");
             Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the Id of the returned timezone to match the timezoneId, even with non-integer UTC offset.");
-        });
+        }
     }
 
     // Test when timezoneId is null

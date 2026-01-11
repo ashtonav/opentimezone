@@ -55,7 +55,7 @@ public class TimezoneServiceTests
 
         // Assert
         Assert.That(timezones, Is.Not.Null, "Expected a non-null object");
-        Assert.That(timezones.Count, Is.GreaterThan(0), "Expected more than zero time zones");
+        Assert.That(timezones.Count(), Is.GreaterThan(0), "Expected more than zero time zones");
     }
 
     [Test]

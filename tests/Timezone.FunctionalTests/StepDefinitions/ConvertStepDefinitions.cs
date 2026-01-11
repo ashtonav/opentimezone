@@ -3,7 +3,7 @@ namespace Timezone.FunctionalTests.StepDefinitions;
 using System.Globalization;
 using System.Text.Json;
 using Core.Models;
-using FluentAssertions;
+using NUnit.Framework;
 using RestSharp;
 using Support;
 
@@ -42,6 +42,6 @@ public class ConvertStepDefinitions(ScenarioContext context) : TestBase(context)
         var response = JsonSerializer.Deserialize<TimeZoneConversionResultResponse>
             (rawResponse.Content, JsonSerializerOptions);
 
-        response.DateTime.Should().Be(expected);
+        Assert.That(response.DateTime, Is.EqualTo(expected));
     }
 }

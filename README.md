@@ -95,18 +95,18 @@ curl -X 'GET' 'https://api.opentimezone.com/timezones'
 ### Option 2: Using Visual Studio (recommended for development purposes)
 
 #### Requirements
-- Visual Studio 2022
+- Visual Studio 2026
     - With ASP.NET and web development installed from the Visual Studio Installer
 - Docker
-- .NET 8 SDK
+- .NET 10 SDK
 
 #### How to Run
-1. Open the solution in Visual Studio 2022.
+1. Open the solution in Visual Studio 2026.
 2. Run it using Docker. 
-3. The API can be accessed at [https://localhost:5280](https://localhost:5280).
+3. The API can be accessed at [https://localhost:5281](https://localhost:5281).
 
 #### How to Test
-1. Open the solution in Visual Studio 2022.
+1. Open the solution in Visual Studio 2026.
 2. Run it using Docker.
 3. Afterward run the tests in Test Explorer.
 

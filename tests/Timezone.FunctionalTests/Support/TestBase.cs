@@ -1,4 +1,5 @@
 namespace Timezone.FunctionalTests.Support;
+
 using RestSharp;
 
 public class TestBase

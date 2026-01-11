@@ -5,13 +5,13 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "5280",
-        "ASPNETCORE_HTTP_PORTS": "5279"
+        "ASPNETCORE_HTTPS_PORTS": "5281",
+        "ASPNETCORE_HTTP_PORTS": "5280"
       },
       "publishAllPorts": true,
       "useSSL": true,
-      "httpPort": 5279,
-      "sslPort": 5280
+      "httpPort": 5280,
+      "sslPort": 5281
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json"

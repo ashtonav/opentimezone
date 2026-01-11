@@ -1,4 +1,5 @@
 namespace TimezoneWebApi.Controllers.Examples;
+
 using Swashbuckle.AspNetCore.Filters;
 using Timezone.Core.Models;
 
