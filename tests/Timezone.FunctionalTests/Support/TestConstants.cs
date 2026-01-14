@@ -1,6 +1,7 @@
 namespace Timezone.FunctionalTests.Support;
 
-public static class TestConstants
+internal static class TestConstants
 {
-    public const string ServiceUrl = "http://localhost:5280";
+    internal const string OpenTimezoneWebApiContainerPort = "8080";
+    internal const string OpenTimezoneWebApiContainerPath = "src/Timezone.WebApi/";
 }

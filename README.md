@@ -107,8 +107,7 @@ curl -X 'GET' 'https://api.opentimezone.com/timezones'
 
 #### How to Test
 1. Open the solution in Visual Studio 2026.
-2. Run it using Docker.
-3. Afterward run the tests in Test Explorer.
+2. Run the tests in Test Explorer.
 
 ## Contributing
 

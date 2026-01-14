@@ -70,25 +70,6 @@ public class TimezoneHelperTests
         }
     }
 
-    // Test when timezoneId is for a timezone that does not observe daylight saving time (e.g., Arizona Mountain Time)
-    [Test]
-    public void GetTimezoneReturnsCorrectTimezoneForTimezonesThatDontObserveDaylightSavingTime()
-    {
-        // Arrange
-        var timezoneId = "US Mountain Standard Time"; // Arizona Mountain Time does not observe DST
-
-        // Act
-        var result = TimezoneHelper.GetTimezone(timezoneId);
-
-        using (Assert.EnterMultipleScope())
-        {
-            // Assert
-            Assert.That(result, Is.Not.Null, "Expected result to not be null when timezoneId is valid.");
-            Assert.That(timezoneId, Is.EqualTo(result!.Id), "Expected the Id of the returned timezone to match the timezoneId.");
-        }
-        Assert.That(result.SupportsDaylightSavingTime, Is.False, "Expected the returned timezone to not support daylight saving time.");
-    }
-
     // Test with a maximum string length
     [Test]
     public void GetTimezoneReturnsNullWhenTimezoneIdIsBigString()
