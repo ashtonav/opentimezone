@@ -23,17 +23,17 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
         Context.Set<RestRequest?>(request);
     }
 
-    [Then(@"I should get at least (.*) timezones")]
-    public void ThenIShouldGetAtLeastTimezones(int minimumExpectedNumberOfTimezones)
+    [Then(@"I should get exactly (.*) timezones")]
+    public void ThenIShouldGetExactlyTimezones(int minimumExpectedNumberOfTimezones)
     {
+        // Arrange
         var response = Context.Get<RestResponse?>();
-
-        // Act
         var listOfTimezones = JsonSerializer.Deserialize<IEnumerable<TimezoneResponse>>
             (response.Content, JsonSerializerOptions);
 
+        // Act
         // Assert
-        Assert.That(listOfTimezones.Count(), Is.GreaterThanOrEqualTo(minimumExpectedNumberOfTimezones));
+        Assert.That(listOfTimezones.Count(), Is.EqualTo(minimumExpectedNumberOfTimezones));
     }
 
     [When(@"I send the request")]
@@ -80,6 +80,31 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
         // Assert
         Assert.That(actualTimezone.DisplayName, Is.EqualTo(expectedName));
         Assert.That(actualTimezone.BaseOffset.Hours, Is.EqualTo(expectedOffset));
+    }
+
+
+    [Then(@"the list of timezone response should be:")]
+    public void ThenTheListOfTimezoneResponseShouldBe(Table table)
+    {
+        // Arrange
+        var response = Context.Get<RestResponse?>();
+        var actual = JsonSerializer.Deserialize<IEnumerable<TimezoneResponse>>
+            (response.Content, JsonSerializerOptions).ToList();
+
+        var expected = table.Rows.Select(r => new TimezoneResponse
+        {
+            Id = r["Id"].Trim(),
+            DisplayName = r["Name"].Trim(),
+            BaseOffset = TimeSpan.Parse(r["Offset"].Trim(), CultureInfo.InvariantCulture)
+        }).ToList();
+
+        // Assert
+        for (var i = 0; i < expected.Count; i++)
+        {
+            Assert.That(actual[i].Id, Is.EqualTo(expected[i].Id));
+            Assert.That(actual[i].DisplayName, Is.EqualTo(expected[i].DisplayName));
+            Assert.That(actual[i].BaseOffset, Is.EqualTo(expected[i].BaseOffset));
+        }
     }
 
 }
