@@ -40,7 +40,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     public void WhenISendTheRequest()
     {
         var request = Context.Get<RestRequest?>();
-        var response = Client.Execute(request);
+        var response = TestContainer.Client.Execute(request);
         // Add to context
         Context.Set<RestResponse?>(response);
     }
