@@ -24,7 +24,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     }
 
     [Then(@"I should get exactly (.*) timezones")]
-    public void ThenIShouldGetExactlyTimezones(int minimumExpectedNumberOfTimezones)
+    public void ThenIShouldGetExactlyTimezones(int expectedNumberOfTimezones)
     {
         // Arrange
         var response = Context.Get<RestResponse?>();
@@ -33,7 +33,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
 
         // Act
         // Assert
-        Assert.That(listOfTimezones.Count(), Is.EqualTo(minimumExpectedNumberOfTimezones));
+        Assert.That(listOfTimezones.Count(), Is.EqualTo(expectedNumberOfTimezones));
     }
 
     [When(@"I send the request")]
@@ -107,4 +107,61 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
         }
     }
 
+    [Given("I have a request to get all timezone abbreviations with includeNumeric = false")]
+    public void GivenIHaveARequestToGetAllTimezoneAbbreviationsWithIncludeNumericFalse()
+    {
+        var request = new RestRequest("timezones/abbreviations/search?includeNumeric=false");
+        Context.Set<RestRequest?>(request);
+    }
+
+    [Given("I have a request to get all timezone abbreviations")]
+    public void GivenIHaveARequestToGetAllTimezoneAbbreviations()
+    {
+        var request = new RestRequest($"/timezones/abbreviations");
+        Context.Set<RestRequest?>(request);
+    }
+
+    [Then("I should get exactly (.*) timezone abbreviations")]
+    public void ThenIShouldGetExactlyTimezoneAbbreviations(int expectedNumberOfTimezoneAbbreviations)
+    {
+        // Arrange
+        var response = Context.Get<RestResponse?>();
+        var listOfAbbreviations = JsonSerializer.Deserialize<GetTimezoneAbbreviationResponse>
+            (response.Content, JsonSerializerOptions);
+
+        // Act
+        // Assert
+        Assert.That(listOfAbbreviations.Abbreviations.Count(), Is.EqualTo(expectedNumberOfTimezoneAbbreviations));
+    }
+
+    [Then("the list of timezone abbreviations response should be:")]
+    public void ThenTheListOfTimezoneAbbreviationsResponseShouldBe(Table table)
+    {
+        // Arrange
+        var response = Context.Get<RestResponse?>();
+        var actual = JsonSerializer.Deserialize<GetTimezoneAbbreviationResponse>
+            (response.Content, JsonSerializerOptions);
+
+        var expected = table.Rows.Select(r => new TimezoneAbbreviationResponse
+        {
+            Abbreviation = r["Abbreviation"].Trim(),
+            UtcOffset = TimeSpan.Parse(r["Offset"].Trim(), CultureInfo.InvariantCulture),
+            TimezoneIds = [.. Array.ConvertAll(r["TimezoneIds"].Split(','), p => p.Trim())]
+        }).ToList();
+
+        // Assert
+        for (var i = 0; i < expected.Count; i++)
+        {
+            Assert.That(actual.Abbreviations.ElementAt(i).Abbreviation, Is.EqualTo(expected[i].Abbreviation));
+            Assert.That(actual.Abbreviations.ElementAt(i).UtcOffset, Is.EqualTo(expected[i].UtcOffset));
+            Assert.That(actual.Abbreviations.ElementAt(i).TimezoneIds, Is.EqualTo(expected[i].TimezoneIds));
+        }
+    }
+
+    [Given("I have a request to retrieve timezone abbreviation '(.*)'")]
+    public void GivenIHaveARequestToRetrieveTimezoneAbbreviation(string abbreviation)
+    {
+        var request = new RestRequest($"/timezones/abbreviations/search?abbreviation={abbreviation}");
+        Context.Set<RestRequest?>(request);
+    }
 }
