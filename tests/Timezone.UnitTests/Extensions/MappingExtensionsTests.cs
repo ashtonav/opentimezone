@@ -220,4 +220,181 @@ public class MappingExtensionTests
         // Assert
         Assert.That(result.DateTime, Is.EqualTo(DateTime.MaxValue));
     }
+
+    [Test]
+    public void TimezoneAbbreviationDomainModelToResponseGroupsAndMapsCorrectly()
+    {
+        // Arrange
+        var items = new List<TimezoneAbbreviationDomainModel>
+        {
+            new() {
+                Abbreviation = "AEDT",
+                UtcOffset = TimeSpan.FromHours(11),
+                TimezoneId = "Australia/Sydney"
+            },
+            new() {
+                Abbreviation = "AEDT",
+                UtcOffset = TimeSpan.FromHours(11),
+                TimezoneId = "Australia/Melbourne"
+            },
+            new() {
+                Abbreviation = "AEDT",
+                UtcOffset = TimeSpan.FromHours(11),
+                TimezoneId = "Australia/Sydney" // duplicate should be removed
+            },
+        };
+
+        // Act
+        var response = items.ToResponse();
+        var abbreviations = response.Abbreviations.ToList();
+
+        // Assert
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(abbreviations, Has.Count.EqualTo(1));
+
+            Assert.That(abbreviations[0].Abbreviation, Is.EqualTo("AEDT"));
+            Assert.That(abbreviations[0].UtcOffset, Is.EqualTo(TimeSpan.FromHours(11)));
+
+            // Distinct + filtered + ordered
+            Assert.That(abbreviations[0].TimezoneIds.ToList(), Is.EqualTo(new List<string>
+            {
+                "Australia/Melbourne",
+                "Australia/Sydney"
+            }));
+        }
+    }
+
+    [Test]
+    public void TimezoneAbbreviationDomainModelToResponseDistinctsTimezoneIdsCaseInsensitive()
+    {
+        // Arrange
+        var items = new List<TimezoneAbbreviationDomainModel>
+        {
+            new() {
+                Abbreviation = "GMT",
+                UtcOffset = TimeSpan.Zero,
+                TimezoneId = "Europe/London"
+            },
+            new() {
+                Abbreviation = "GMT",
+                UtcOffset = TimeSpan.Zero,
+                TimezoneId = "europe/london" // same id, different casing
+            },
+            new() {
+                Abbreviation = "GMT",
+                UtcOffset = TimeSpan.Zero,
+                TimezoneId = "Etc/UTC"
+            }
+        };
+
+        // Act
+        var response = items.ToResponse();
+        var abbreviation = response.Abbreviations.Single();
+
+        // Assert
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(abbreviation.Abbreviation, Is.EqualTo("GMT"));
+            Assert.That(abbreviation.UtcOffset, Is.EqualTo(TimeSpan.Zero));
+
+            // Case-insensitive distinct + ordered
+            Assert.That(abbreviation.TimezoneIds.ToList(), Is.EqualTo(new List<string>
+            {
+                "Etc/UTC",
+                "Europe/London"
+            }));
+        }
+    }
+
+    [Test]
+    public void TimezoneAbbreviationDomainModelToResponseCreatesSeparateGroupsForSameAbbreviationDifferentOffsets()
+    {
+        // Arrange
+        var items = new List<TimezoneAbbreviationDomainModel>
+        {
+            new() {
+                Abbreviation = "CST",
+                UtcOffset = TimeSpan.FromHours(-6),
+                TimezoneId = "America/Chicago"
+            },
+            new() {
+                Abbreviation = "CST",
+                UtcOffset = TimeSpan.FromHours(8),
+                TimezoneId = "Asia/Shanghai"
+            }
+        };
+
+        // Act
+        var response = items.ToResponse();
+        var abbreviations = response.Abbreviations.ToList();
+
+        // Assert
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(abbreviations, Has.Count.EqualTo(2));
+
+            // Ordered by UtcOffset (ascending)
+            Assert.That(abbreviations[0].Abbreviation, Is.EqualTo("CST"));
+            Assert.That(abbreviations[0].UtcOffset, Is.EqualTo(TimeSpan.FromHours(-6)));
+            Assert.That(abbreviations[0].TimezoneIds.ToList(), Is.EqualTo(new List<string> { "America/Chicago" }));
+
+            Assert.That(abbreviations[1].Abbreviation, Is.EqualTo("CST"));
+            Assert.That(abbreviations[1].UtcOffset, Is.EqualTo(TimeSpan.FromHours(8)));
+            Assert.That(abbreviations[1].TimezoneIds.ToList(), Is.EqualTo(new List<string> { "Asia/Shanghai" }));
+        }
+    }
+
+    [Test]
+    public void TimezoneAbbreviationDomainModelToResponseOrdersGroupsByUtcOffset()
+    {
+        // Arrange
+        var items = new List<TimezoneAbbreviationDomainModel>
+        {
+            // Intentionally out of order
+            new() {
+                Abbreviation = "A",
+                UtcOffset = TimeSpan.FromHours(10),
+                TimezoneId = "Australia/Sydney"
+            },
+            new() {
+                Abbreviation = "B",
+                UtcOffset = TimeSpan.FromHours(-5),
+                TimezoneId = "America/New_York"
+            },
+            new() {
+                Abbreviation = "C",
+                UtcOffset = TimeSpan.Zero,
+                TimezoneId = "Etc/UTC"
+            }
+        };
+
+        // Act
+        var response = items.ToResponse();
+        var offsets = response.Abbreviations.Select(x => x.UtcOffset).ToList();
+
+        // Assert
+        Assert.That(offsets, Is.EqualTo(new List<TimeSpan>
+        {
+            TimeSpan.FromHours(-5),
+            TimeSpan.Zero,
+            TimeSpan.FromHours(10)
+        }));
+    }
+
+    [Test]
+    public void EmptyTimezoneAbbreviationDomainModelListToResponse()
+    {
+        // Arrange
+        var items = new List<TimezoneAbbreviationDomainModel>();
+
+        // Act
+        var response = items.ToResponse();
+
+        // Assert
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.Abbreviations, Is.Not.Null);
+        Assert.That(response.Abbreviations.Any(), Is.False);
+    }
 }

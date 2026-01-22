@@ -10,7 +10,7 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TimezoneResponse))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     [Route("timezone/{*timezoneId}")]
     public async Task<IActionResult> GetTimezone(string timezoneId)
     {
@@ -29,5 +29,41 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
         var timezones = timezoneService.GetTimezones();
 
         return timezones.ToResponse();
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTimezoneAbbreviationResponse))]
+    [Route("timezones/abbreviations")]
+    public async Task<ActionResult> GetTimezoneAbbreviations(bool includeNumeric = true)
+    {
+        var timezones = timezoneService.GetAllTimezoneAbbreviations();
+
+        if (!includeNumeric)
+        {
+            timezones = timezones
+                .Where(x => x.Abbreviation.First() is not '-' and not '+');
+        }
+
+        return Ok(timezones.ToResponse());
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTimezoneAbbreviationResponse))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+    [Route("timezones/abbreviation/{abbreviation}")]
+    public async Task<ActionResult> GetTimezoneAbbreviationsByName(string abbreviation)
+    {
+        var timeZones = timezoneService.GetAllTimezoneAbbreviations();
+
+        var timezoneAbbreviations = timeZones
+            .Where(x => string.Equals(x.Abbreviation, abbreviation, StringComparison.InvariantCultureIgnoreCase));
+
+        if (!timezoneAbbreviations.Any())
+        {
+            return NotFound();
+        }
+
+        var response = timezoneAbbreviations.ToResponse();
+        return Ok(response);
     }
 }
