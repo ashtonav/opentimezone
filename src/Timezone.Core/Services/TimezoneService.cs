@@ -38,6 +38,45 @@ public class TimezoneService : ITimezoneService
         }
     }
 
+    public IEnumerable<TimezoneAbbreviationDomainModel> GetAllTimezoneAbbreviations()
+    {
+        var timeZones = TimeZoneInfo.GetSystemTimeZones();
+
+        var daylightSavingsAbbreviations = timeZones
+            .Where(x => x.DaylightName != x.StandardName)
+            .Select(timezone =>
+            {
+                var rules = timezone.GetAdjustmentRules();
+
+                foreach (var rule in rules)
+                {
+                    if (rule.DateEnd > DateTime.UtcNow)
+                    {
+                        return new TimezoneAbbreviationDomainModel
+                        {
+                            Abbreviation = timezone.DaylightName,
+                            // based on https://learn.microsoft.com/en-us/dotnet/api/system.timezoneinfo.adjustmentrule.daylightdelta?view=net-10.0#remarks
+                            UtcOffset = timezone.BaseUtcOffset + rule.DaylightDelta + rule.BaseUtcOffsetDelta,
+                            TimezoneId = timezone.Id
+                        };
+                    }
+                }
+
+                return null;
+            })
+            .Where(x => x != null);
+
+        var nonDaylightSavingsAbbreviations = timeZones.Select(x =>
+            new TimezoneAbbreviationDomainModel
+            {
+                Abbreviation = x.StandardName,
+                UtcOffset = x.BaseUtcOffset,
+                TimezoneId = x.Id
+            });
+
+        return nonDaylightSavingsAbbreviations.Concat(daylightSavingsAbbreviations)!;
+    }
+
     /// <summary>
     /// This sanitizes the DateTime object by removing the DateTimeKind.
     /// This is necessary because the TimeZoneInfo.ConvertTimeBySystemTimeZoneId method
