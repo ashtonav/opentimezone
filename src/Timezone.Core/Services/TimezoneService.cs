@@ -67,12 +67,23 @@ public class TimezoneService : ITimezoneService
             .Where(x => x != null);
 
         var nonDaylightSavingsAbbreviations = timeZones.Select(x =>
-            new TimezoneAbbreviationDomainModel
+        {
+            if (x.Equals(TimeZoneInfo.Utc))
             {
-                Abbreviation = x.StandardName,
-                UtcOffset = x.BaseUtcOffset,
-                TimezoneId = x.Id
-            });
+                return new TimezoneAbbreviationDomainModel()
+                {
+                    Abbreviation = "UTC",
+                    UtcOffset = x.BaseUtcOffset,
+                    TimezoneId = x.Id
+                };
+            }
+
+            return new TimezoneAbbreviationDomainModel
+            {
+                Abbreviation = x.StandardName, UtcOffset = x.BaseUtcOffset, TimezoneId = x.Id
+            };
+        });
+
 
         return nonDaylightSavingsAbbreviations.Concat(daylightSavingsAbbreviations)!;
     }
