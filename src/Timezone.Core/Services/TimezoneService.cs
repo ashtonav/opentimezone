@@ -27,7 +27,7 @@ public class TimezoneService : ITimezoneService
             throw new ArgumentException("DateTime is required.");
         }
 
-        if (request.FromTimezone == null)
+        if (request.FromTimezone is null)
         {
             throw new ArgumentException("FromTimezone provided is invalid. Please provide a valid timezone.");
         }
@@ -44,38 +44,37 @@ public class TimezoneService : ITimezoneService
 
         var daylightSavingsAbbreviations = timeZones
             .Where(x => x.DaylightName != x.StandardName)
-            .Select(timezone =>
-            {
-                var rules = timezone.GetAdjustmentRules();
+            .Select(CreateDaylightSavingsAbbreviation)
+            .OfType<TimezoneAbbreviationDomainModel>();
 
-                foreach (var rule in rules)
-                {
-                    if (rule.DateEnd > DateTime.UtcNow)
-                    {
-                        return new TimezoneAbbreviationDomainModel
-                        {
-                            Abbreviation = timezone.DaylightName,
-                            // based on https://learn.microsoft.com/en-us/dotnet/api/system.timezoneinfo.adjustmentrule.daylightdelta?view=net-10.0#remarks
-                            UtcOffset = timezone.BaseUtcOffset + rule.DaylightDelta + rule.BaseUtcOffsetDelta,
-                            TimezoneId = timezone.Id
-                        };
-                    }
-                }
+        var nonDaylightSavingsAbbreviations = timeZones.Select(CreateNonDaylightSavingsAbbreviation);
 
-                return null;
-            })
-            .Where(x => x != null);
-
-        var nonDaylightSavingsAbbreviations = timeZones.Select(x =>
-            new TimezoneAbbreviationDomainModel
-            {
-                Abbreviation = x.StandardName,
-                UtcOffset = x.BaseUtcOffset,
-                TimezoneId = x.Id
-            });
-
-        return nonDaylightSavingsAbbreviations.Concat(daylightSavingsAbbreviations)!;
+        return nonDaylightSavingsAbbreviations.Concat(daylightSavingsAbbreviations);
     }
+
+    private static TimezoneAbbreviationDomainModel? CreateDaylightSavingsAbbreviation(TimeZoneInfo timeZone)
+    {
+        var rule = timeZone.GetAdjustmentRules().FirstOrDefault(r => r.DateEnd > DateTime.UtcNow);
+        if (rule is null)
+        {
+            return null;
+        }
+
+        return new TimezoneAbbreviationDomainModel
+        {
+            Abbreviation = timeZone.DaylightName,
+            // based on https://learn.microsoft.com/en-us/dotnet/api/system.timezoneinfo.adjustmentrule.daylightdelta?view=net-10.0#remarks
+            UtcOffset = timeZone.BaseUtcOffset + rule.DaylightDelta + rule.BaseUtcOffsetDelta,
+            TimezoneId = timeZone.Id
+        };
+    }
+
+    private static TimezoneAbbreviationDomainModel CreateNonDaylightSavingsAbbreviation(TimeZoneInfo timeZone) => new()
+    {
+        Abbreviation = timeZone.Equals(TimeZoneInfo.Utc) ? "UTC" : timeZone.StandardName,
+        UtcOffset = timeZone.BaseUtcOffset,
+        TimezoneId = timeZone.Id
+    };
 
     /// <summary>
     /// This sanitizes the DateTime object by removing the DateTimeKind.
