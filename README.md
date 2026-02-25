@@ -82,7 +82,7 @@ curl -X 'GET' 'https://api.opentimezone.com/timezones'
 ### Option 1: Using Docker (recommended for self-hosting)
 
 #### Requirements
-- Docker
+- Docker.
 
 #### How to Run
 1. From the root folder of the project, run the following commands:
@@ -95,10 +95,10 @@ curl -X 'GET' 'https://api.opentimezone.com/timezones'
 ### Option 2: Using Visual Studio (recommended for development purposes)
 
 #### Requirements
-- Visual Studio 2026
-    - With ASP.NET and web development installed from the Visual Studio Installer
-- Docker
-- .NET 10 SDK
+- Visual Studio 2026.
+    - With ASP.NET and web development installed from the Visual Studio Installer.
+- Docker.
+- .NET 10 SDK.
 
 #### How to Run
 1. Open the solution in Visual Studio 2026.
@@ -115,4 +115,4 @@ Pull requests are accepted.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://choosealicense.com/licenses/mit/).
