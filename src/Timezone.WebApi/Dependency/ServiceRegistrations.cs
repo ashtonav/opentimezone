@@ -1,4 +1,4 @@
-namespace TimezoneWebApi.Dependency;
+namespace Timezone.WebApi.Dependency;
 
 using Controllers.Examples;
 using Microsoft.OpenApi;
