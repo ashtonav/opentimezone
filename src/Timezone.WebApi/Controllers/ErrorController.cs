@@ -1,4 +1,4 @@
-namespace TimezoneWebApi.Controllers;
+namespace Timezone.WebApi.Controllers;
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;

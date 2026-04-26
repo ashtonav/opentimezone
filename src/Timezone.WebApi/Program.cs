@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using TimezoneWebApi.Dependency;
+using Timezone.WebApi.Dependency;
 
 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 {
