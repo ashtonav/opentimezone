@@ -12,7 +12,7 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TimezoneResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     [Route("timezone/{*timezoneId}")]
-    public async Task<IActionResult> GetTimezone(string timezoneId)
+    public ActionResult GetTimezone(string timezoneId)
     {
         var timezone = timezoneService.GetTimezone(timezoneId);
 
@@ -24,7 +24,7 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Route("timezones")]
-    public async Task<IEnumerable<TimezoneResponse>> GetTimezones()
+    public IEnumerable<TimezoneResponse> GetTimezones()
     {
         var timezones = timezoneService.GetTimezones();
 
@@ -34,7 +34,7 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTimezoneAbbreviationResponse))]
     [Route("timezones/abbreviations")]
-    public async Task<ActionResult> GetTimezoneAbbreviations()
+    public ActionResult GetTimezoneAbbreviations()
     {
         var timezoneAbbreviations = timezoneService.GetAllTimezoneAbbreviations();
         var response = timezoneAbbreviations.ToResponse();
@@ -45,7 +45,7 @@ public class TimezoneController(ITimezoneService timezoneService) : Controller
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTimezoneAbbreviationResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     [Route("timezones/abbreviations/search")]
-    public async Task<ActionResult> GetTimezoneAbbreviationsSearch(string? abbreviation, bool includeNumeric = true)
+    public ActionResult GetTimezoneAbbreviationsSearch(string? abbreviation, bool includeNumeric = true)
     {
         var timezoneAbbreviations = timezoneService.GetAllTimezoneAbbreviations();
 
