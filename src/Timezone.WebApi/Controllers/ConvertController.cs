@@ -15,7 +15,7 @@ public class ConvertController(ITimezoneService timezoneService) : Controller
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TimeZoneConversionResultResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
     [SwaggerRequestExample(typeof(TimeZoneConversionRequest), typeof(PostConvertExamples))]
-    public async Task<TimeZoneConversionResultResponse> ConvertTime(TimeZoneConversionRequest request)
+    public TimeZoneConversionResultResponse ConvertTime(TimeZoneConversionRequest request)
     {
         var domain = request.ToDomain();
 
