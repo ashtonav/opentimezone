@@ -1,12 +1,11 @@
 namespace Timezone.FunctionalTests.Support;
 
 using DotNet.Testcontainers.Builders;
-using RestSharp;
 
 [Binding]
 internal static class TestContainer
 {
-    internal static RestClient Client { get; set; }
+    internal static HttpClient Client { get; set; }
 
     [BeforeTestRun]
     internal static async Task BeforeTestRunInjection()
@@ -24,7 +23,7 @@ internal static class TestContainer
             .Build();
         await container.StartAsync();
 
-        Client = new RestClient(new RestClientOptions($"http://{container.Hostname}:{container.GetMappedPublicPort()}"));
+        Client = new HttpClient { BaseAddress = new Uri($"http://{container.Hostname}:{container.GetMappedPublicPort()}") };
 
         await WaitForTestContainerToBeReady();
     }
@@ -35,7 +34,7 @@ internal static class TestContainer
         {
             try
             {
-                var result = await Client.GetAsync(new RestRequest(resource: "/"));
+                var result = await Client.GetAsync("/");
 
                 if (result.IsSuccessStatusCode)
                 {
