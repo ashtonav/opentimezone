@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text.Json;
 using Core.Models;
 using NUnit.Framework;
-using RestSharp;
 using Support;
 
 [Binding]
@@ -18,18 +17,18 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     [Given(@"I have a request to get all timezones")]
     public void GivenIHaveARequestToGetAllTimezones()
     {
-        var request = new RestRequest("/timezones");
+        var request = new HttpRequestMessage(HttpMethod.Get, "/timezones");
         // Add to context
-        Context.Set<RestRequest?>(request);
+        Context.Set<HttpRequestMessage?>(request);
     }
 
     [Then(@"I should get exactly (.*) timezones")]
-    public void ThenIShouldGetExactlyTimezones(int expectedNumberOfTimezones)
+    public async Task ThenIShouldGetExactlyTimezones(int expectedNumberOfTimezones)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var listOfTimezones = JsonSerializer.Deserialize<IEnumerable<TimezoneResponse>>
-            (response.Content, JsonSerializerOptions);
+            (await response.Content.ReadAsStringAsync(), JsonSerializerOptions);
 
         // Act
         // Assert
@@ -37,27 +36,27 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     }
 
     [When(@"I send the request")]
-    public void WhenISendTheRequest()
+    public async Task WhenISendTheRequest()
     {
-        var request = Context.Get<RestRequest?>();
-        var response = TestContainer.Client.Execute(request);
+        var request = Context.Get<HttpRequestMessage?>();
+        var response = await TestContainer.Client.SendAsync(request);
         // Add to context
-        Context.Set<RestResponse?>(response);
+        Context.Set<HttpResponseMessage?>(response);
     }
 
     [Given(@"I have a request to get '(.*)' timezone")]
     public void GivenIHaveARequestToGetTimezone(string timezoneName)
     {
-        var request = new RestRequest($"/timezone/{timezoneName}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/timezone/{timezoneName}");
         // Add to context
-        Context.Set<RestRequest?>(request);
+        Context.Set<HttpRequestMessage?>(request);
     }
 
     [Then(@"the response should return '(.*)' status code")]
     public void ThenTheResponseShouldReturnStatusCode(string statusCode)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var expectedStatusCode = int.Parse(statusCode, CultureInfo.InvariantCulture);
         var actualStatusCode = (int)response.StatusCode;
 
@@ -66,16 +65,16 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     }
 
     [Then(@"the response should contain timezone information:")]
-    public void ThenTheResponseShouldContainTimezoneInformation(Table table)
+    public async Task ThenTheResponseShouldContainTimezoneInformation(Table table)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var expectedName = table.Rows[0]["Name"];
         var expectedOffset = int.Parse(table.Rows[0]["Offset"], CultureInfo.InvariantCulture);
 
         // Act
         var actualTimezone = JsonSerializer.Deserialize<TimezoneResponse>
-            (response.Content, JsonSerializerOptions);
+            (await response.Content.ReadAsStringAsync(), JsonSerializerOptions);
 
         // Assert
         Assert.That(actualTimezone.DisplayName, Is.EqualTo(expectedName));
@@ -84,12 +83,12 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
 
 
     [Then(@"the list of timezone response should be:")]
-    public void ThenTheListOfTimezoneResponseShouldBe(Table table)
+    public async Task ThenTheListOfTimezoneResponseShouldBe(Table table)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var actual = JsonSerializer.Deserialize<IEnumerable<TimezoneResponse>>
-            (response.Content, JsonSerializerOptions).ToList();
+            (await response.Content.ReadAsStringAsync(), JsonSerializerOptions).ToList();
 
         var expected = table.Rows.Select(r => new TimezoneResponse
         {
@@ -110,24 +109,24 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     [Given("I have a request to get all timezone abbreviations with includeNumeric = false")]
     public void GivenIHaveARequestToGetAllTimezoneAbbreviationsWithIncludeNumericFalse()
     {
-        var request = new RestRequest("timezones/abbreviations/search?includeNumeric=false");
-        Context.Set<RestRequest?>(request);
+        var request = new HttpRequestMessage(HttpMethod.Get, "timezones/abbreviations/search?includeNumeric=false");
+        Context.Set<HttpRequestMessage?>(request);
     }
 
     [Given("I have a request to get all timezone abbreviations")]
     public void GivenIHaveARequestToGetAllTimezoneAbbreviations()
     {
-        var request = new RestRequest($"/timezones/abbreviations");
-        Context.Set<RestRequest?>(request);
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/timezones/abbreviations");
+        Context.Set<HttpRequestMessage?>(request);
     }
 
     [Then("I should get exactly (.*) timezone abbreviations")]
-    public void ThenIShouldGetExactlyTimezoneAbbreviations(int expectedNumberOfTimezoneAbbreviations)
+    public async Task ThenIShouldGetExactlyTimezoneAbbreviations(int expectedNumberOfTimezoneAbbreviations)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var listOfAbbreviations = JsonSerializer.Deserialize<GetTimezoneAbbreviationResponse>
-            (response.Content, JsonSerializerOptions);
+            (await response.Content.ReadAsStringAsync(), JsonSerializerOptions);
 
         // Act
         // Assert
@@ -135,12 +134,12 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     }
 
     [Then("the list of timezone abbreviations response should be:")]
-    public void ThenTheListOfTimezoneAbbreviationsResponseShouldBe(Table table)
+    public async Task ThenTheListOfTimezoneAbbreviationsResponseShouldBe(Table table)
     {
         // Arrange
-        var response = Context.Get<RestResponse?>();
+        var response = Context.Get<HttpResponseMessage?>();
         var actual = JsonSerializer.Deserialize<GetTimezoneAbbreviationResponse>
-            (response.Content, JsonSerializerOptions);
+            (await response.Content.ReadAsStringAsync(), JsonSerializerOptions);
 
         var expected = table.Rows.Select(r => new TimezoneAbbreviationResponse
         {
@@ -161,7 +160,7 @@ public class TimezoneStepDefinitions(ScenarioContext context) : TestBase(context
     [Given("I have a request to retrieve timezone abbreviation '(.*)'")]
     public void GivenIHaveARequestToRetrieveTimezoneAbbreviation(string abbreviation)
     {
-        var request = new RestRequest($"/timezones/abbreviations/search?abbreviation={abbreviation}");
-        Context.Set<RestRequest?>(request);
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/timezones/abbreviations/search?abbreviation={abbreviation}");
+        Context.Set<HttpRequestMessage?>(request);
     }
 }

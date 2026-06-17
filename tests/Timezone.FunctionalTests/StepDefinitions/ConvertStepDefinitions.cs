@@ -1,10 +1,10 @@
 namespace Timezone.FunctionalTests.StepDefinitions;
 
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using Core.Models;
 using NUnit.Framework;
-using RestSharp;
 using Support;
 
 [Binding]
@@ -18,29 +18,30 @@ public class ConvertStepDefinitions(ScenarioContext context) : TestBase(context)
     [Given(@"I have a request to convert date '""([^""]*)""' from '""([^""]*)""' to '""([^""]*)""'")]
     public void GivenIHaveARequestToConvertDateFromTo(string dateTimeString, string fromTimezone, string toTimezone)
     {
-        var request = new RestRequest("/convert", Method.Post) { RequestFormat = DataFormat.Json };
-
-        request.AddBody(new TimeZoneConversionRequest
+        var request = new HttpRequestMessage(HttpMethod.Post, "/convert")
         {
-            DateTime = DateTime.Parse(dateTimeString, CultureInfo.InvariantCulture),
-            FromTimezone = fromTimezone,
-            ToTimezone = toTimezone
-        });
+            Content = new StringContent(JsonSerializer.Serialize(new TimeZoneConversionRequest
+            {
+                DateTime = DateTime.Parse(dateTimeString, CultureInfo.InvariantCulture),
+                FromTimezone = fromTimezone,
+                ToTimezone = toTimezone
+            }), Encoding.UTF8, "application/json")
+        };
 
         // Add to context
-        Context.Set<RestRequest?>(request);
+        Context.Set<HttpRequestMessage?>(request);
     }
 
     [Then(@"the response should correctly convert the time into '""([^""]*)""'")]
-    public void ThenTheResponseShouldCorrectlyConvertTheTimeInto(string dateTime)
+    public async Task ThenTheResponseShouldCorrectlyConvertTheTimeInto(string dateTime)
     {
         // Arrange
         var expected = DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
 
         // Act
-        var rawResponse = Context.Get<RestResponse?>();
+        var rawResponse = Context.Get<HttpResponseMessage?>();
         var response = JsonSerializer.Deserialize<TimeZoneConversionResultResponse>
-            (rawResponse.Content, JsonSerializerOptions);
+            (await rawResponse.Content.ReadAsStringAsync(), JsonSerializerOptions);
 
         Assert.That(response.DateTime, Is.EqualTo(expected));
     }
